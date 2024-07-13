@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
+from get_resas.utils.base_models import BaseRequestModel, BaseResponseModel
+
 
 class RESASAPIClient:
     BASE_URL = "https://opendata.resas-portal.go.jp/api/v1"
@@ -13,19 +15,42 @@ class RESASAPIClient:
         self.client = httpx.Client()
 
     def fetch_data(
-        self, endpoint: str, params: Optional[Dict[str, Any]] = None
+        self,
+        request_model: BaseRequestModel,
+        response_model: Optional[BaseResponseModel] = None,
     ) -> Dict[str, Any]:
-        response = self.client.get(
-            f"{self.BASE_URL}/{endpoint}", params=params, headers=self.headers
-        )
-        response.status_code
-        response.raise_for_status()
-        return response.json()
+        """リクエストを送信し、レスポンスを返す
 
-    def fetch_iter(self, endpoint: str, params_list: List[Dict[str, Any]]):
+        Args:
+            request_model (BaseRequestModel): リクエストに必要なendpointとparams
+            response_model (Optional[BaseResponseModel], optional): レスポンスモデル. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: レスポンス
+        """
+        response = self.client.get(
+            f"{self.BASE_URL}/{request_model.endpoint}",
+            params=request_model.params.dict(),
+            headers=self.headers,
+        )
+        print(response.status_code)
+        response.raise_for_status()
+        if response_model:
+            return response_model(**response.json()).dict()
+        else:
+            return response.json()
+
+    def fetch_iter(
+        self,
+        request_models: List[BaseRequestModel],
+        response_model: Optional[BaseResponseModel] = None,
+    ):
         results = []
-        for params in params_list:
-            response = self.fetch_data(endpoint, params)
+        for request_model in request_models:
+            response = self.fetch_data(
+                request_model,
+                response_model=response_model if response_model else None,
+            )
             results.extend(response["result"])
             sleep(0.2)
         return results
