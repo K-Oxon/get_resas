@@ -1,5 +1,3 @@
-from typing import List
-
 import dlt
 
 from get_resas.api_client import RESASAPIClient
@@ -13,7 +11,7 @@ logger = get_my_logger(__name__)
 @dlt.resource(
     name="cities", primary_key=["prefCode", "cityCode"], write_disposition="merge"
 )
-def get_cities_job() -> List[any]:
+def get_cities_job() -> list[any]:
     """
     市区町村一覧を取得する
     """

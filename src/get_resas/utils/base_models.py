@@ -1,5 +1,3 @@
-from typing import Any, Dict, List, Optional
-
 from pydantic import BaseModel
 
 
@@ -9,7 +7,7 @@ class BaseRequestModel(BaseModel):
     """
 
     endpoint: str
-    params: Optional[Dict[str, Any]] = None
+    params: dict[str, any] | None = None
 
 
 class BaseResponseModel(BaseModel):
@@ -17,5 +15,5 @@ class BaseResponseModel(BaseModel):
     レスポンスモデルの基底クラス
     """
 
-    message: Optional[str] = None
-    result: Optional[List[Dict[str, Any]]] = None
+    message: str | None = None
+    result: list[dict[str, any]] | None = None

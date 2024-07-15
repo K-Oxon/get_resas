@@ -1,5 +1,3 @@
-from typing import List
-
 from get_resas.utils.base_models import BaseRequestModel, BaseResponseModel
 from get_resas.utils.get_pref_code import get_pref_code
 from pydantic import BaseModel, Field
@@ -47,4 +45,4 @@ class City(BaseModel):
 
 
 class CitiesResponse(BaseResponseModel):
-    result: List[City]
+    result: list[City]

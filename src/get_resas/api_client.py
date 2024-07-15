@@ -1,5 +1,4 @@
 from time import sleep
-from typing import Any, Dict, List, Optional
 
 import httpx
 
@@ -17,16 +16,16 @@ class RESASAPIClient:
     def fetch_data(
         self,
         request_model: BaseRequestModel,
-        response_model: Optional[BaseResponseModel] = None,
-    ) -> Dict[str, Any]:
+        response_model: BaseResponseModel | None = None,
+    ) -> dict[str, any]:
         """リクエストを送信し、レスポンスを返す
 
         Args:
             request_model (BaseRequestModel): リクエストに必要なendpointとparams
-            response_model (Optional[BaseResponseModel], optional): レスポンスモデル. Defaults to None.
+            response_model (BaseResponseModel | None, optional): レスポンスモデル. Defaults to None.
 
         Returns:
-            Dict[str, Any]: レスポンス
+            dict[str, any]: レスポンス
         """
         response = self.client.get(
             f"{self.BASE_URL}/{request_model.endpoint}",
@@ -42,9 +41,9 @@ class RESASAPIClient:
 
     def fetch_iter(
         self,
-        request_models: List[BaseRequestModel],
-        response_model: Optional[BaseResponseModel] = None,
-    ):
+        request_models: list[BaseRequestModel],
+        response_model: BaseResponseModel | None = None,
+    ) -> list[any]:
         results = []
         for request_model in request_models:
             response = self.fetch_data(
