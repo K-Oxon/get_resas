@@ -1,2 +1,1 @@
-def hello() -> str:
-    return "Hello from get-resas!"
+from .main import main

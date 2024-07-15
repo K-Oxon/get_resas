@@ -1,5 +1,5 @@
 # get_resas
 
 ```bash
-dotenvx run -- rye run python src/get_resas/main.py
+dotenvx run -- rye run get_resas
 ```
