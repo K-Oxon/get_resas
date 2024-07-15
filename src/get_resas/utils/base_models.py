@@ -9,6 +9,9 @@ class BaseRequestModel(BaseModel):
     endpoint: str
     params: dict[str, any] | None = None
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class BaseResponseModel(BaseModel):
     """
@@ -17,3 +20,6 @@ class BaseResponseModel(BaseModel):
 
     message: str | None = None
     result: list[dict[str, any]] | None = None
+
+    class Config:
+        arbitrary_types_allowed = True
