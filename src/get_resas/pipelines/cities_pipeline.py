@@ -18,7 +18,8 @@ def get_cities_job() -> list[any]:
     api_client = RESASAPIClient(api_key=API_KEY)
     req_model_list = CitiesRequest.generate_req_model_list()
     response = api_client.fetch_iter(
-        request_models=req_model_list[0:2],
+        request_models=req_model_list,
+        with_params=False,
         response_model=CitiesResponse,
     )
     yield response
@@ -28,7 +29,7 @@ def get_cities_pipeline() -> dlt.Pipeline:
     pipeline = dlt.pipeline(
         pipeline_name="cities",
         destination="bigquery",
-        dataset_name="resas_api_data",
+        dataset_name=dlt.config.value,
         export_schema_path="src/get_resas/dlt_schemas/export",
     )
     load_info = pipeline.run(get_cities_job)

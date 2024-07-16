@@ -42,14 +42,63 @@ class RESASAPIClient:
     def fetch_iter(
         self,
         request_models: list[BaseRequestModel],
+        with_params: bool = False,
         response_model: BaseResponseModel | None = None,
     ) -> list[any]:
+        """リクエストモデルのリストを受け取り、レスポンスのresultをまとめて返す
+
+        Args:
+            request_models (list[BaseRequestModel]): リクエストモデルのリスト
+            with_params (bool, optional): リクエストパラメータをレスポンスに追加するか. Defaults to False.
+            response_model (BaseResponseModel | None, optional): レスポンスモデル. Defaults to None.
+
+        Returns:
+            list[any]: レスポンスのリスト
+        """
         results = []
         for request_model in request_models:
             response = self.fetch_data(
                 request_model,
                 response_model=response_model if response_model else None,
             )
-            results.extend(response["result"])
+            if with_params:
+                response = self._add_params_to_response(
+                    response, request_model.params.dict()
+                )
+            if isinstance(response["result"], list):
+                results.extend(response["result"])
+            else:
+                results.append(response["result"])
             sleep(0.2)
         return results
+
+    def _add_params_to_response(
+        self, response: dict[str, any], params: dict[str, any]
+    ) -> dict[str, any]:
+        """レスポンスにリクエストパラメータを追加する
+        ★人口系データなどはリクエストしたパラメータを追加しないとなんのデータか判別不能なため
+
+        Args:
+            response (dict[str, any]): レスポンス
+            params (dict[str, any]): リクエストパラメータ
+
+        Returns:
+            dict[str, any]: リクエストパラメータを追加したレスポンス
+
+        Example:
+            response = {"message": None, "result": {"boudaryYear": 2020, "data": [...]}}
+            params = {"prefCode": "1", "cityCode": "101100"}
+            response = self._add_params_to_response(response, params)
+            print(response)
+            # => {"message": None, "result": {"boudaryYear": 2020, "data": [...], "prefCode": "1", "cityCode": "101100"}}
+        """
+        _response = response.copy()
+        if isinstance(_response["result"], dict):
+            # ネストしたdictの場合は最上位階層に追加
+            _response["result"].update(params)
+        elif isinstance(_response["result"], list):
+            # リストの場合はリストの各要素（一つ下の階層）に追加
+            for item in _response["result"]:
+                if isinstance(item, dict):
+                    item.update(params)
+        return _response
