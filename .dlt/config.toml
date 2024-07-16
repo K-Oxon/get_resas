@@ -1,6 +1,8 @@
 [destination.bigquery]
 location = "asia-northeast1"
-dataset_name = "resas_api_data"
+dataset_name = "dl_localgov_kpi_database"
+# dataset_name = "resas_api_data"
+
 
 [runtime]
 log_level = "INFO" # the system log level of dlt

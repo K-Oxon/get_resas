@@ -1,5 +1,6 @@
 from get_resas.utils.base_models import BaseRequestModel, BaseResponseModel
 from get_resas.utils.get_city_code import get_city_code
+from get_resas.utils.get_pref_code import get_pref_code
 from pydantic import BaseModel, Field
 
 """
@@ -36,6 +37,19 @@ class PopulationCompositionRequest(BaseRequestModel):
                     params=PopulationCompositionParams(
                         prefCode=pref_code, cityCode=city_code
                     )
+                )
+            )
+        return req_model_list
+
+    @classmethod
+    def generate_req_model_list_pref(cls):
+        """都道府県コードのみのリクエストモデルを生成"""
+        pref_code_list = get_pref_code()
+        req_model_list = []
+        for pref_code in pref_code_list:
+            req_model_list.append(
+                cls(
+                    params=PopulationCompositionParams(prefCode=pref_code, cityCode="-")
                 )
             )
         return req_model_list

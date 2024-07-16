@@ -1,5 +1,5 @@
-version: 3
-version_hash: PAtL+UGESNq8ikstZk+sAH+w8DRaCQTWZZFzW6F74xM=
+version: 2
+version_hash: AuWg3WplzaOgahVkyUGLNw5565X2B2mLfDaDex3SwEc=
 engine_version: 9
 name: population_composition
 tables:
@@ -49,6 +49,12 @@ tables:
       boundary_year:
         data_type: bigint
         nullable: true
+      pref_code:
+        data_type: text
+        nullable: true
+      city_code:
+        data_type: text
+        nullable: true
       _dlt_load_id:
         data_type: text
         nullable: false
@@ -56,12 +62,6 @@ tables:
         data_type: text
         nullable: false
         unique: true
-      pref_code:
-        data_type: text
-        nullable: true
-      city_code:
-        data_type: text
-        nullable: true
     write_disposition: replace
     x-normalizer:
       seen-data: true
@@ -161,6 +161,5 @@ normalizers:
   json:
     module: dlt.common.normalizers.json.relational
 previous_hashes:
-- kZaymzQBD0j8F+Qlu84BGXReQNFjYIxl8u2Eoue/NW4=
 - R9HUQrtFASDr9GxZHm37rhVHjdJiSAqAPSARAn6sKe8=
 - 6sl0uI20W+oGZGFVNr0QkOuDOZO6E4udElXDGVaVVgQ=

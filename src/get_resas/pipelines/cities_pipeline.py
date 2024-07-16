@@ -29,7 +29,8 @@ def get_cities_pipeline() -> dlt.Pipeline:
     pipeline = dlt.pipeline(
         pipeline_name="cities",
         destination="bigquery",
-        dataset_name=dlt.config.value,
+        # dataset_name=dlt.config.value,
+        dataset_name="dl_localgov_kpi_database",
         export_schema_path="src/get_resas/dlt_schemas/export",
     )
     load_info = pipeline.run(get_cities_job)
@@ -39,8 +40,8 @@ def get_cities_pipeline() -> dlt.Pipeline:
 
 if __name__ == "__main__":
     # データ取得のみ
-    data = get_cities_job()
-    print(list(data)[0:2])
+    # data = get_cities_job()
+    # print(list(data)[0:2])
 
     # データロードまで実行
-    # get_cities_pipeline()
+    get_cities_pipeline()

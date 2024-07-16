@@ -3,6 +3,9 @@ from time import sleep
 import httpx
 
 from get_resas.utils.base_models import BaseRequestModel, BaseResponseModel
+from get_resas.utils.logger import get_my_logger
+
+logger = get_my_logger(__name__)
 
 
 class RESASAPIClient:
@@ -17,7 +20,7 @@ class RESASAPIClient:
         self,
         request_model: BaseRequestModel,
         response_model: BaseResponseModel | None = None,
-    ) -> dict[str, any]:
+    ) -> dict[str, any] | None:
         """リクエストを送信し、レスポンスを返す
 
         Args:
@@ -32,10 +35,16 @@ class RESASAPIClient:
             params=request_model.params.dict(),
             headers=self.headers,
         )
-        print(response.status_code)
+        logger.info(
+            f"request params: {request_model.params.dict()}, response status code: {response.status_code}"
+        )
         response.raise_for_status()
         if response_model:
-            return response_model(**response.json()).dict()
+            try:
+                return response_model(**response.json()).dict()
+            except Exception as e:
+                logger.error(f"Validation error: {e}, input: {response.json()}")
+                return response.json()
         else:
             return response.json()
 
@@ -46,6 +55,7 @@ class RESASAPIClient:
         response_model: BaseResponseModel | None = None,
     ) -> list[any]:
         """リクエストモデルのリストを受け取り、レスポンスのresultをまとめて返す
+        北方領土など200が帰ってきてもresultがNoneの場合があり、それはskip扱い
 
         Args:
             request_models (list[BaseRequestModel]): リクエストモデルのリスト
@@ -67,6 +77,8 @@ class RESASAPIClient:
                 )
             if isinstance(response["result"], list):
                 results.extend(response["result"])
+            elif response["result"] is None:
+                pass
             else:
                 results.append(response["result"])
             sleep(0.2)
@@ -92,13 +104,12 @@ class RESASAPIClient:
             print(response)
             # => {"message": None, "result": {"boudaryYear": 2020, "data": [...], "prefCode": "1", "cityCode": "101100"}}
         """
-        _response = response.copy()
-        if isinstance(_response["result"], dict):
+        if isinstance(response["result"], dict):
             # ネストしたdictの場合は最上位階層に追加
-            _response["result"].update(params)
-        elif isinstance(_response["result"], list):
+            response["result"].update(params)
+        elif isinstance(response["result"], list):
             # リストの場合はリストの各要素（一つ下の階層）に追加
-            for item in _response["result"]:
+            for item in response["result"]:
                 if isinstance(item, dict):
                     item.update(params)
-        return _response
+        return response
