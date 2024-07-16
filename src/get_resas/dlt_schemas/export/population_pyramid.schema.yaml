@@ -1,0 +1,241 @@
+version: 4
+version_hash: aAcscWv3QKfwkb+tojLlV+b6bgmCwX09595B2Vu/8pY=
+engine_version: 9
+name: population_pyramid
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    description: Created by DLT. Tracks completed loads
+  resas_population_pyramid:
+    columns:
+      year_left__year:
+        data_type: bigint
+        nullable: false
+        primary_key: true
+      year_left__old_age_count:
+        data_type: bigint
+        nullable: true
+      year_left__old_age_percent:
+        data_type: bigint
+        nullable: true
+      year_left__middle_age_count:
+        data_type: bigint
+        nullable: true
+      year_left__middle_age_percent:
+        data_type: bigint
+        nullable: true
+      year_left__new_age_count:
+        data_type: bigint
+        nullable: true
+      year_left__new_age_percent:
+        data_type: bigint
+        nullable: true
+      year_right__year:
+        data_type: bigint
+        nullable: true
+      year_right__old_age_count:
+        data_type: bigint
+        nullable: true
+      year_right__old_age_percent:
+        data_type: bigint
+        nullable: true
+      year_right__middle_age_count:
+        data_type: bigint
+        nullable: true
+      year_right__middle_age_percent:
+        data_type: bigint
+        nullable: true
+      year_right__new_age_count:
+        data_type: bigint
+        nullable: true
+      year_right__new_age_percent:
+        data_type: bigint
+        nullable: true
+      pref_code:
+        data_type: text
+        nullable: false
+        primary_key: true
+      city_code:
+        data_type: text
+        nullable: false
+        primary_key: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: merge
+    x-normalizer:
+      seen-data: true
+    x-merge-strategy: delete-insert
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    file_format: preferred
+    x-normalizer:
+      seen-data: true
+  resas_population_pyramid__year_left__data:
+    columns:
+      classx:
+        data_type: text
+        nullable: true
+      man:
+        data_type: bigint
+        nullable: true
+      man_percent:
+        data_type: double
+        nullable: true
+      woman:
+        data_type: bigint
+        nullable: true
+      woman_percent:
+        data_type: double
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+    parent: resas_population_pyramid
+    x-normalizer:
+      seen-data: true
+  resas_population_pyramid__year_right__data:
+    columns:
+      classx:
+        data_type: text
+        nullable: true
+      man:
+        data_type: bigint
+        nullable: true
+      man_percent:
+        data_type: double
+        nullable: true
+      woman:
+        data_type: bigint
+        nullable: true
+      woman_percent:
+        data_type: double
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+    parent: resas_population_pyramid
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    foreign_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      propagation:
+        tables:
+          resas_population_pyramid:
+            _dlt_id: _dlt_root_id
+previous_hashes:
+- 1i4Po33NqKvUR4nI98D0PfrG4vF4jgmwPXiaFIN/OKA=
+- mqHN4coVaFMjPzVJnDzNUpGvFrisHVekHViHnxcTPEE=
+- 731r6cdktRVgW/Rp4aOgK771reNL3GkMOY9Z7eOpkug=
+- KoPFTNNodO+9FymJ5TaRKVjGdp1rnVdleu3YXKc1KV4=

@@ -52,6 +52,7 @@ class RESASAPIClient:
         self,
         request_models: list[BaseRequestModel],
         with_params: bool = False,
+        exclude_params_keys: list[str] | None = None,
         response_model: BaseResponseModel | None = None,
     ) -> list[any]:
         """リクエストモデルのリストを受け取り、レスポンスのresultをまとめて返す
@@ -60,6 +61,7 @@ class RESASAPIClient:
         Args:
             request_models (list[BaseRequestModel]): リクエストモデルのリスト
             with_params (bool, optional): リクエストパラメータをレスポンスに追加するか. Defaults to False.
+            exclude_params_keys (list[str] | None, optional): 追加しないパラメータのキー. Defaults to None.
             response_model (BaseResponseModel | None, optional): レスポンスモデル. Defaults to None.
 
         Returns:
@@ -73,7 +75,9 @@ class RESASAPIClient:
             )
             if with_params:
                 response = self._add_params_to_response(
-                    response, request_model.params.dict()
+                    response,
+                    request_model.params.dict(),
+                    exclude_params_keys=exclude_params_keys,
                 )
             if isinstance(response["result"], list):
                 results.extend(response["result"])
@@ -85,7 +89,10 @@ class RESASAPIClient:
         return results
 
     def _add_params_to_response(
-        self, response: dict[str, any], params: dict[str, any]
+        self,
+        response: dict[str, any],
+        params: dict[str, any],
+        exclude_params_keys: list[str] | None = None,
     ) -> dict[str, any]:
         """レスポンスにリクエストパラメータを追加する
         ★人口系データなどはリクエストしたパラメータを追加しないとなんのデータか判別不能なため
@@ -93,6 +100,7 @@ class RESASAPIClient:
         Args:
             response (dict[str, any]): レスポンス
             params (dict[str, any]): リクエストパラメータ
+            exclude_params_keys (list[str] | None, optional): 追加しないパラメータのキー. Defaults to None.
 
         Returns:
             dict[str, any]: リクエストパラメータを追加したレスポンス
@@ -104,6 +112,8 @@ class RESASAPIClient:
             print(response)
             # => {"message": None, "result": {"boudaryYear": 2020, "data": [...], "prefCode": "1", "cityCode": "101100"}}
         """
+        if exclude_params_keys:
+            params = {k: v for k, v in params.items() if k not in exclude_params_keys}
         if isinstance(response["result"], dict):
             # ネストしたdictの場合は最上位階層に追加
             response["result"].update(params)
