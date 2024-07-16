@@ -3,7 +3,7 @@
 *.json
 *.csv
 !data/cities/cities.csv
-!src/get_resas/utils/cities.csv
+!src/get_resas/utils/*.csv
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,macos,visualstudiocode,linux,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,macos,visualstudiocode,linux,windows

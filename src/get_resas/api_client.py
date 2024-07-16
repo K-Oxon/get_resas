@@ -38,7 +38,7 @@ class RESASAPIClient:
         logger.info(
             f"request params: {request_model.params.dict()}, response status code: {response.status_code}"
         )
-        response.raise_for_status()
+        response.raise_for_status()  # エラーでも200で返ってくるのでほぼ意味無し
         if response_model:
             try:
                 return response_model(**response.json()).dict()
@@ -85,6 +85,7 @@ class RESASAPIClient:
                 pass
             else:
                 results.append(response["result"])
+            # 5 リクエスト/秒 に抑える
             sleep(0.2)
         return results
 
