@@ -9,7 +9,7 @@ logger = get_my_logger(__name__)
 
 
 @dlt.resource(
-    name="cities", primary_key=["prefCode", "cityCode"], write_disposition="merge"
+    name="resas_cities", primary_key=["prefCode", "cityCode"], write_disposition="merge"
 )
 def get_cities_job() -> list[any]:
     """

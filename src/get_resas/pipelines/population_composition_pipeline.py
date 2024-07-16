@@ -12,7 +12,7 @@ logger = get_my_logger(__name__)
 
 
 @dlt.resource(
-    name="population_composition",
+    name="resas_population_composition",
     write_disposition="replace",
 )
 def get_population_composition_job():
