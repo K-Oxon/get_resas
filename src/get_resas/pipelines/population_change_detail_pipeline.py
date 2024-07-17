@@ -20,7 +20,7 @@ def get_population_change_detail_job():
     api_client = RESASAPIClient(api_key=API_KEY)
     req_model_list = PopulationChangeDetailRequest.generate_req_model_list()
     response = api_client.fetch_iter(
-        request_models=req_model_list[0:2],
+        request_models=req_model_list,
         with_params=True,
         response_model=PopulationChangeDetailResponse,
     )
@@ -41,6 +41,6 @@ def get_population_change_detail_pipeline():
 
 
 if __name__ == "__main__":
-    # get_population_change_detail_pipeline()
-    data = get_population_change_detail_job()
-    print(list(data))
+    get_population_change_detail_pipeline()
+    # data = get_population_change_detail_job()
+    # print(list(data))
