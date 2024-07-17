@@ -67,6 +67,10 @@ class TotalData(BaseModel):
 
 
 class YearData(BaseModel):
+    """
+    TODO: それぞれのAgeClassesが無い場合がある
+    """
+
     year: int = Field(..., description="年")
     positiveAgeClasses: list[AgeClassData]
     negativeAgeClasses: list[AgeClassData]

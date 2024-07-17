@@ -1,4 +1,5 @@
 from .cities_pipeline import get_cities_pipeline
+from .population_change_detail_pipeline import get_population_change_detail_pipeline
 from .population_composition_pipeline import get_population_composition_pipeline
 from .population_pyramid_pipeline import get_population_pyramid_pipeline
 # add other jobs here
