@@ -1,5 +1,5 @@
-version: 4
-version_hash: aAcscWv3QKfwkb+tojLlV+b6bgmCwX09595B2Vu/8pY=
+version: 6
+version_hash: Qcyvqw7CEVRBlUy5bjwrOul7AkR1K4z1leEC5e2pG6Q=
 engine_version: 9
 name: population_pyramid
 tables:
@@ -171,6 +171,9 @@ tables:
         data_type: text
         nullable: false
         root_key: true
+      class:
+        data_type: text
+        nullable: true
     parent: resas_population_pyramid
     x-normalizer:
       seen-data: true
@@ -206,6 +209,9 @@ tables:
         data_type: text
         nullable: false
         root_key: true
+      class:
+        data_type: text
+        nullable: true
     parent: resas_population_pyramid
     x-normalizer:
       seen-data: true
@@ -235,6 +241,8 @@ normalizers:
           resas_population_pyramid:
             _dlt_id: _dlt_root_id
 previous_hashes:
+- fmiHf9pQocAQHQQ1oMU76fA+ASHWcgXb8C+eCumlpEc=
+- aAcscWv3QKfwkb+tojLlV+b6bgmCwX09595B2Vu/8pY=
 - 1i4Po33NqKvUR4nI98D0PfrG4vF4jgmwPXiaFIN/OKA=
 - mqHN4coVaFMjPzVJnDzNUpGvFrisHVekHViHnxcTPEE=
 - 731r6cdktRVgW/Rp4aOgK771reNL3GkMOY9Z7eOpkug=

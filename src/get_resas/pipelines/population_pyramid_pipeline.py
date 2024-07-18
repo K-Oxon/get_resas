@@ -1,3 +1,13 @@
+"""
+TODO:
+  - 9000:12000 の実行
+
+req_model_list[8409]
+"city_code":"13381",
+"year_left__year":2000,
+が何も無くてエラーになってる
+"""
+
 import dlt
 
 from get_resas.api_client import RESASAPIClient
@@ -19,8 +29,9 @@ logger = get_my_logger(__name__)
 def get_population_pyramid_job():
     api_client = RESASAPIClient(api_key=API_KEY)
     req_model_list = PopulationPyramidRequest.generate_req_model_list()
+    logger.info(f"req_model_list: {len(req_model_list)}")  # 27000
     response = api_client.fetch_iter(
-        request_models=req_model_list[0:8000],  # 多すぎないように調整
+        request_models=req_model_list[9000:12000],  # 多すぎないように調整
         with_params=True,
         exclude_params_keys=[
             "yearLeft",
@@ -41,6 +52,7 @@ def get_population_pyramid_pipeline():
     )
     load_info = pipeline.run(get_population_pyramid_job)
     logger.info(load_info)
+    logger.info(f"loaded row counts: {pipeline.last_trace.last_normalize_info}")
     return load_info
 
 

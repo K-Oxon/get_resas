@@ -14,6 +14,8 @@ aiohttp==3.9.5
     # via gcsfs
 aiosignal==1.3.1
     # via aiohttp
+altair==5.3.0
+    # via streamlit
 annotated-types==0.7.0
     # via pydantic
 anyio==4.4.0
@@ -22,8 +24,13 @@ astunparse==1.6.3
     # via dlt
 attrs==23.2.0
     # via aiohttp
+    # via jsonschema
+    # via referencing
+blinker==1.8.2
+    # via streamlit
 cachetools==5.3.3
     # via google-auth
+    # via streamlit
 certifi==2024.7.4
     # via httpcore
     # via httpx
@@ -32,6 +39,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via dlt
+    # via streamlit
 decorator==5.1.1
     # via gcsfs
 dlt==0.5.1
@@ -50,6 +58,7 @@ gitdb==4.0.11
     # via gitpython
 gitpython==3.1.43
     # via dlt
+    # via streamlit
 giturlparse==0.12.0
     # via dlt
 google-api-core==2.19.1
@@ -108,10 +117,23 @@ idna==3.7
     # via yarl
 iniconfig==2.0.0
     # via pytest
+jinja2==3.1.4
+    # via altair
+    # via pydeck
 jsonpath-ng==1.6.1
     # via dlt
+jsonschema==4.23.0
+    # via altair
+jsonschema-specifications==2023.12.1
+    # via jsonschema
 makefun==1.15.4
     # via dlt
+markdown-it-py==3.0.0
+    # via rich
+markupsafe==2.1.5
+    # via jinja2
+mdurl==0.1.2
+    # via markdown-it-py
 multidict==6.0.5
     # via aiohttp
     # via yarl
@@ -119,22 +141,31 @@ mypy==1.10.1
 mypy-extensions==1.0.0
     # via mypy
 numpy==2.0.0
+    # via altair
     # via pandas
     # via pyarrow
+    # via pydeck
+    # via streamlit
 oauthlib==3.2.2
     # via requests-oauthlib
 orjson==3.10.6
     # via dlt
 packaging==24.1
+    # via altair
     # via dlt
     # via google-cloud-bigquery
     # via pytest
+    # via streamlit
 pandas==2.2.2
+    # via altair
     # via get-resas
+    # via streamlit
 pathvalidate==3.2.0
     # via dlt
 pendulum==3.0.0
     # via dlt
+pillow==10.4.0
+    # via streamlit
 pluggy==1.5.0
     # via pytest
 ply==3.11
@@ -148,8 +179,10 @@ protobuf==4.25.3
     # via googleapis-common-protos
     # via grpcio-status
     # via proto-plus
+    # via streamlit
 pyarrow==16.1.0
     # via dlt
+    # via streamlit
 pyasn1==0.6.0
     # via pyasn1-modules
     # via rsa
@@ -159,6 +192,10 @@ pydantic==2.8.2
     # via get-resas
 pydantic-core==2.20.1
     # via pydantic
+pydeck==0.9.1
+    # via streamlit
+pygments==2.18.0
+    # via rich
 pytest==8.2.2
 python-dateutil==2.9.0.post0
     # via google-cloud-bigquery
@@ -170,6 +207,9 @@ pytz==2024.1
     # via pandas
 pyyaml==6.0.1
     # via dlt
+referencing==0.35.1
+    # via jsonschema
+    # via jsonschema-specifications
 requests==2.32.3
     # via dlt
     # via gcsfs
@@ -177,10 +217,16 @@ requests==2.32.3
     # via google-cloud-bigquery
     # via google-cloud-storage
     # via requests-oauthlib
+    # via streamlit
 requests-oauthlib==2.0.0
     # via google-auth-oauthlib
 requirements-parser==0.9.0
     # via dlt
+rich==13.7.1
+    # via streamlit
+rpds-py==0.19.0
+    # via jsonschema
+    # via referencing
 rsa==4.9
     # via google-auth
 ruff==0.5.1
@@ -198,12 +244,20 @@ smmap==5.0.1
 sniffio==1.3.1
     # via anyio
     # via httpx
+streamlit==1.36.0
 tenacity==8.5.0
     # via dlt
+    # via streamlit
 time-machine==2.14.2
     # via pendulum
+toml==0.10.2
+    # via streamlit
 tomlkit==0.13.0
     # via dlt
+toolz==0.12.1
+    # via altair
+tornado==6.4.1
+    # via streamlit
 types-setuptools==70.3.0.20240710
     # via requirements-parser
 typing-extensions==4.12.2
@@ -211,6 +265,7 @@ typing-extensions==4.12.2
     # via mypy
     # via pydantic
     # via pydantic-core
+    # via streamlit
 tzdata==2024.1
     # via dlt
     # via pandas
