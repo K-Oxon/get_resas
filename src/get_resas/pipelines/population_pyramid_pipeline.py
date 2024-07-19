@@ -1,10 +1,16 @@
 """
 TODO:
-  - 9000:12000 の実行
+  - year_left__yearをPKから外す
+    - 市町村によってはyear_left__yearがnullが返ってくるため
 
 req_model_list[8409]
 "city_code":"13381",
 "year_left__year":2000,
+
+req_model_list[13873,13875:13878]
+"city_code":"07543",
+"year_left__year":2015,
+
 が何も無くてエラーになってる
 """
 
@@ -31,7 +37,7 @@ def get_population_pyramid_job():
     req_model_list = PopulationPyramidRequest.generate_req_model_list()
     logger.info(f"req_model_list: {len(req_model_list)}")  # 27000
     response = api_client.fetch_iter(
-        request_models=req_model_list[9000:12000],  # 多すぎないように調整
+        request_models=req_model_list[14000:15000],  # 多すぎないように調整
         with_params=True,
         exclude_params_keys=[
             "yearLeft",
