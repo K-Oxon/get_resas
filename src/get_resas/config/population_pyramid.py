@@ -15,6 +15,10 @@ class PopulationPyramidParams(BaseModel):
     yearLeft: int = Field(..., description="年度1 1980-2045 5年毎")
     yearRight: int = Field(..., description="年度2 1980-2045 5年毎")
     addArea: str | None = Field(None, description="追加エリアコード 特に気にしない")
+    year: int = Field(
+        ...,
+        description="dummy yearLeftが色々悪さするのでparamsには無いがキーとして使う",
+    )
 
 
 class PopulationPyramidRequest(BaseRequestModel):
@@ -60,6 +64,7 @@ class PopulationPyramidRequest(BaseRequestModel):
                             cityCode=city_code,
                             yearLeft=year,
                             yearRight=1980,
+                            year=year,
                         )
                     )
                 )
