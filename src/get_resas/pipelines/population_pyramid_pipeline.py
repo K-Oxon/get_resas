@@ -27,7 +27,7 @@ def get_population_pyramid_job():
     req_model_list = PopulationPyramidRequest.generate_req_model_list()
     logger.info(f"req_model_list: {len(req_model_list)}")  # 27000
     response = api_client.fetch_iter(
-        request_models=req_model_list[2000:7000],  # 多すぎないように調整
+        request_models=req_model_list[0:10000],  # rate limit超えないように調整
         with_params=True,
         exclude_params_keys=[
             "yearLeft",
