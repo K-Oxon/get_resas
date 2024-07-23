@@ -1,9 +1,3 @@
-"""
-TODO:
-いくつかのデータに欠損有り
-市町村によってはyear_left__yearがnullが返ってくるため
-"""
-
 import dlt
 
 from get_resas.api_client import RESASAPIClient

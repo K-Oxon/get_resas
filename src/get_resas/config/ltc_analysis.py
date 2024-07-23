@@ -53,7 +53,7 @@ class LtcAnalysisRequest(BaseRequestModel):
             case 201:
                 broad_category_cd = "0"
                 middle_category_cd = "000"
-                year_tuple = 2021
+                year_tuple = (2021,)
             case 202:
                 broad_category_cd = "0"
                 middle_category_cd = "000"
@@ -141,10 +141,14 @@ class LtcAnalysisRequest(BaseRequestModel):
 class DataItem(BaseModel):
     code: str = Field(..., description="都道府県 or 市区町村 or 二次医療圏 コード")
     name: str = Field(..., description="都道府県 or 市区町村 or 二次医療圏 名称")
-    value: int = Field(..., description="値")
+    value: int | float | None = Field(..., description="値 null有り")
 
 
 class Result(BaseModel):
+    """
+    paramsは"matter_2"だが返り値は"matter2"
+    """
+
     sort: str
     dispType: str
     matter1: str = Field(..., description="表示内容(大分類)")
