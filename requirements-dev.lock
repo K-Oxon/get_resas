@@ -50,6 +50,8 @@ dlt==0.5.1
     # via get-resas
 duckdb==1.0.0
     # via get-resas
+et-xmlfile==1.1.0
+    # via openpyxl
 frozenlist==1.4.1
     # via aiohttp
     # via aiosignal
@@ -154,6 +156,8 @@ numpy==2.0.0
     # via streamlit
 oauthlib==3.2.2
     # via requests-oauthlib
+openpyxl==3.1.5
+    # via get-resas
 orjson==3.10.6
     # via dlt
 packaging==24.1
