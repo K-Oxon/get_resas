@@ -1,5 +1,5 @@
-version: 5
-version_hash: zHC2sKxhXcIRQHnrhJ6RG/JGvgmSaMVaIIooIYywgmA=
+version: 7
+version_hash: mqLTcUB8uhfBKb21i9Zvh0tLQqnYRpJfHVetFnEVR9U=
 engine_version: 9
 name: ltc_analysis
 tables:
@@ -163,6 +163,94 @@ tables:
     parent: resas_ltc_analysis_city
     x-normalizer:
       seen-data: true
+  resas_ltc_analysis_insurer:
+    columns:
+      sort:
+        data_type: text
+        nullable: true
+      disp_type:
+        nullable: false
+        primary_key: true
+        data_type: text
+      matter1:
+        data_type: text
+        nullable: true
+      matter2:
+        nullable: false
+        primary_key: true
+        data_type: text
+      broad_category_code:
+        nullable: false
+        primary_key: true
+        data_type: text
+      middle_category_code:
+        nullable: false
+        primary_key: true
+        data_type: text
+      year:
+        nullable: false
+        primary_key: true
+        data_type: text
+      prefecture_cd:
+        nullable: false
+        primary_key: true
+        data_type: text
+      municipality_cd:
+        nullable: false
+        primary_key: true
+        data_type: text
+      insurance_cd:
+        nullable: false
+        primary_key: true
+        data_type: text
+      code:
+        nullable: false
+        primary_key: true
+        data_type: text
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: merge
+    x-merge-strategy: delete-insert
+    x-normalizer:
+      seen-data: true
+  resas_ltc_analysis_insurer__data:
+    columns:
+      code:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      value:
+        data_type: bigint
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      value__v_double:
+        data_type: double
+        nullable: true
+        variant: true
+    parent: resas_ltc_analysis_insurer
+    x-normalizer:
+      seen-data: true
 settings:
   detections:
   - iso_timestamp
@@ -188,7 +276,11 @@ normalizers:
         tables:
           resas_ltc_analysis_city:
             _dlt_id: _dlt_root_id
+          resas_ltc_analysis_insurer:
+            _dlt_id: _dlt_root_id
 previous_hashes:
+- /Vot66oWTttRRM5On5pqIXfOc/CdTruv+n3+lfNlY38=
+- zHC2sKxhXcIRQHnrhJ6RG/JGvgmSaMVaIIooIYywgmA=
 - CeyN5UyDLbi56WnH4xE/2oys8ehBfhBH1bqLHPf046c=
 - ANtO5f2grfXEWQv0IsO0VlYNUBIRIOmfck+wx/s8O4s=
 - EYPfSdn6JQtHAHIxU9hinvKthey8FRbFI8l7uF5vmdU=

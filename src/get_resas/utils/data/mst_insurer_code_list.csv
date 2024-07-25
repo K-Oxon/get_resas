@@ -1,4 +1,4 @@
-prefCode,prefName,cityCode,cityName,insuranceCode,insurerName
+prefCode,prefName,cityCode,cityName,insurerCode,insurerName
 1,北海道,01100,札幌市,01100,札幌市
 1,北海道,01202,函館市,01202,函館市
 1,北海道,01203,小樽市,01203,小樽市
