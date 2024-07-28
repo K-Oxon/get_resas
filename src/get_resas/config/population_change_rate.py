@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 """
 
 
-class PopulationChangeParams(BaseModel):
+class PopulationChangeRateParams(BaseModel):
     prefCode: str = Field(..., description="都道府県コード")
     cityCode: str = Field(
         ..., description="市区町村コード 「すべての市区町村」を選択する場合は「-」"
@@ -15,7 +15,7 @@ class PopulationChangeParams(BaseModel):
     addArea: str | None = Field(None, description="追加エリアコード 特に気にしない")
 
 
-class PopulationChangeRequest(BaseRequestModel):
+class PopulationChangeRateRequest(BaseRequestModel):
     """
     地域単位、年単位の人口増減率情報
 
@@ -23,7 +23,7 @@ class PopulationChangeRequest(BaseRequestModel):
     """
 
     endpoint: str = "population/sum/perYear"
-    params: PopulationChangeParams
+    params: PopulationChangeRateParams
 
     @classmethod
     def generate_req_model_list(cls):
@@ -36,7 +36,7 @@ class PopulationChangeRequest(BaseRequestModel):
         for pref_code, city_code in pref_city_code_list:
             req_model_list.append(
                 cls(
-                    params=PopulationChangeParams(
+                    params=PopulationChangeRateParams(
                         prefCode=pref_code,
                         cityCode=city_code,
                     )
@@ -88,7 +88,7 @@ class Result(BaseModel):
     bar: Bar
 
 
-class PopulationChangeResponse(BaseResponseModel):
+class PopulationChangeRateResponse(BaseResponseModel):
     """
     地域単位、年単位の人口増減率情報
     都道府県単位

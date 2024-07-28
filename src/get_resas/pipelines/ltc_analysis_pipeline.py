@@ -127,11 +127,10 @@ if __name__ == "__main__":
     def batch_slicer(start: int, end: int) -> Callable[[list], list]:
         return lambda lst: lst[start:end]
 
-    start = 12000
+    start = 0  # 前回の途中から
     batch_size = 1000  # 1000件ずつloadする
     max_requests = 10000 + start  # 24時間のrate limit
 
-    # 6000から始めた
     for list_start in range(start, max_requests, batch_size):
         list_end = min(list_start + batch_size, max_requests)
         jobs = [
