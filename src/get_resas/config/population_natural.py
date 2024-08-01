@@ -33,21 +33,24 @@ class PopulationNaturalRequest(BaseRequestModel):
     @classmethod
     def generate_req_model_list(cls):
         """全パラメータの組み合わせを生成
-        市町村 × (開始年齢, 終了年齢)の組み合わせ
+        市町村 × (開始年齢, 終了年齢)の組み合わせ 約40000件
         """
 
         pref_city_code_list = get_city_code()
         # 開始年齢 5-85(5歳刻み)
         age_from_list = ["-"]
-        age_from_list.extend([str(i) for i in range(5, 85, 5)])
+        age_from_list.extend([str(i) for i in range(5, 86, 5)])
+        age_from_list.extend(["85"])  # 最後の"85"-"-" のために追加
         # 終了年齢 4-89(5歳刻み)
-        age_to_list = [str(i) for i in range(4, 89, 5)]
+        age_to_list = [str(i) for i in range(4, 90, 5)]
         age_to_list.extend(["-"])
         if len(age_from_list) != len(age_to_list):
             raise ValueError("age_from_listとage_to_listの長さが異なります")
-        age_group_list: list[tuple(str, str)] = [
-            (age_from, age_to) for age_from in age_from_list for age_to in age_to_list
-        ]
+        # それぞれの順番の組み合わせを出力
+        age_group_list: list[tuple[str, str]] = []
+        for i in range(len(age_from_list)):
+            age_group_list.append((age_from_list[i], age_to_list[i]))
+
         req_model_list = []
         for pref_code, city_code in pref_city_code_list:
             for age_from, age_to in age_group_list:
