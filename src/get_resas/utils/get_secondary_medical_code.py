@@ -11,6 +11,8 @@ def get_secondary_medical_code() -> list[tuple[str, str]]:
     df = pd.read_csv(csv_path, dtype=str)
     # 二次医療圏の頭2桁を使用
     df["pref_code"] = df["secondary_medical_code"].str[0:2]
+    # int型で必要なので変換
+    df["pref_code"] = df["pref_code"].astype(int)
     # pref_codeとsecondary_medical_codeの組み合わせでユニークにする
     df_unique_code = df.drop_duplicates(subset=["pref_code", "secondary_medical_code"])
     return list(
