@@ -37,6 +37,26 @@ def get_medical_analysis_job(matter2: int):
     yield response
 
 
+@dlt.resource(
+    name="resas_medical_analysis_secondary_medical_area",
+    table_name="resas_medical_analysis_secondary_medical_area",
+    write_disposition="replace",
+)
+def get_medical_analysis_secondary_medical_area_job(matter2: int):
+    api_client = RESASAPIClient(api_key=API_KEY)
+    req_model_list = (
+        MedicalAnalysisRequest.generate_req_model_list_secondary_medical_code(
+            matter2=matter2
+        )
+    )
+    response = api_client.fetch_iter(
+        request_models=req_model_list,
+        with_params=False,
+        response_model=MedicalAnalysisResponse,
+    )
+    yield response
+
+
 def get_medical_analysis_pipeline():
     pipeline = dlt.pipeline(
         pipeline_name="medical_analysis",
@@ -54,6 +74,7 @@ def get_medical_analysis_pipeline():
             # get_medical_analysis_job(matter2=205),
             # get_medical_analysis_job(matter2=206),
             # get_medical_analysis_job(matter2=208),
+            # get_medical_analysis_secondary_medical_area_job(matter2=102),
         ]
     )
     logger.info(load_info)

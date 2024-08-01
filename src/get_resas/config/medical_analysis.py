@@ -107,6 +107,61 @@ class MedicalAnalysisRequest(BaseRequestModel):
                     )
         return req_model_list
 
+    @classmethod
+    def generate_req_model_list_secondary_medical_code(cls, matter2: int):
+        """二次医療圏単位のリクエストを生成
+        有効な都道府県、市町村、二次医療圏コードを入れると335個の全ての二次医療圏のデータが取れる
+
+        """
+        match matter2:
+            case 102:
+                year_tuple = (2014, 2017, 2020)
+                broad_category_code = "00"
+                middle_category_code = "000"
+            case 201 | 202:
+                year_tuple = (2014, 2017, 2020)
+                broad_category_code = "00"
+                middle_category_code = "-"
+            case 203:
+                year_tuple = (2014, 2017, 2020)
+                broad_category_code = "-"
+                middle_category_code = "-"
+            case 204:
+                year_tuple = (2014, 2017, 2020)
+                broad_category_code = "00"
+                middle_category_code = "-"
+            case 205:
+                year_tuple = (2014, 2016, 2018, 2020)  # 2年毎
+                broad_category_code = "00"
+                middle_category_code = "-"
+            case 206 | 208:
+                year_tuple = (2014, 2016, 2018, 2020)  # 2年毎
+                broad_category_code = "-"
+                middle_category_code = "-"
+            case _:
+                raise ValueError("matter2が不正です")
+        disp_type_tuple = (1, 2)
+        req_model_list = []
+        # 年 × 表示タイプごとにリクエストモデルを生成
+        for year in year_tuple:
+            for disp_type in disp_type_tuple:
+                req_model_list.append(
+                    cls(
+                        params=MedicalAnalysisParams(
+                            year=year,
+                            dispType=disp_type,
+                            sort=2,  # なぜか必要
+                            matter2=matter2,
+                            broadCategoryCode=broad_category_code,
+                            middleCategoryCode=middle_category_code,
+                            prefCode="1",  # 有効な適当な値
+                            cityCode="01202",  # 有効な適当な値
+                            secondaryMedicalCode="0101",  # 有効な適当な値
+                        )
+                    )
+                )
+        return req_model_list
+
 
 """
 レスポンス情報

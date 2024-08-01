@@ -1,5 +1,5 @@
-version: 2
-version_hash: Uf3qp8SOaY4Lx+8YDRNiI9uSJwHIXPNzY9L5pinQavY=
+version: 4
+version_hash: i7DLdZTVnU9+EfzpiVD+MzVDrF0Jhz29M3obPIAOweY=
 engine_version: 9
 name: medical_analysis
 tables:
@@ -158,6 +158,76 @@ tables:
     parent: resas_medical_analysis
     x-normalizer:
       seen-data: true
+  resas_medical_analysis_secondary_medical_area:
+    columns:
+      sort:
+        data_type: text
+        nullable: true
+      disp_type:
+        data_type: text
+        nullable: true
+      matter1:
+        data_type: text
+        nullable: true
+      matter2:
+        data_type: text
+        nullable: true
+      broad_category_code:
+        data_type: text
+        nullable: true
+      middle_category_code:
+        data_type: text
+        nullable: true
+      year:
+        data_type: text
+        nullable: true
+      prefecture_cd:
+        data_type: text
+        nullable: true
+      municipality_cd:
+        data_type: text
+        nullable: true
+      secondary_medical_cd:
+        data_type: text
+        nullable: true
+      code:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: replace
+    x-normalizer:
+      seen-data: true
+  resas_medical_analysis_secondary_medical_area__data:
+    columns:
+      code:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      value:
+        data_type: double
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: resas_medical_analysis_secondary_medical_area
+    x-normalizer:
+      seen-data: true
 settings:
   detections:
   - iso_timestamp
@@ -184,5 +254,7 @@ normalizers:
           resas_medical_analysis:
             _dlt_id: _dlt_root_id
 previous_hashes:
+- bZHM5jZ17on4UwtbtnqnEAgekFvpTV8E7xCEGyjvgCc=
+- Uf3qp8SOaY4Lx+8YDRNiI9uSJwHIXPNzY9L5pinQavY=
 - 4ZdqHi9q0XyzSArterTJvAW3sI6ptEQeFBHJ7lnGA8s=
 - 3YyLmbVrGY4TbGg825Qg9vK6SPfUMcysnWbLBt8J7bE=
