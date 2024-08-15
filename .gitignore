@@ -1,3 +1,4 @@
+secrets.toml
 *.duckdb
 *.jsonl
 *.json
