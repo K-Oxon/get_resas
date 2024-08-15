@@ -30,8 +30,7 @@ def load_population_society_timeseries_pipeline():
     pipeline = dlt.pipeline(
         pipeline_name="population_society_timeseries",
         destination="bigquery",
-        # dataset_name=dlt.config.value,
-        dataset_name="dl_localgov_kpi_database",
+        dataset_name=dlt.config["destination.bigquery.dataset_name"],
         export_schema_path="src/get_resas/dlt_schemas/export",
     )
     load_info = pipeline.run(get_population_society_timeseries_job)

@@ -45,8 +45,7 @@ def load_common_master_tables():
     pipeline = dlt.pipeline(
         pipeline_name="common_master_tables",
         destination="bigquery",
-        # dataset_name=dlt.config.value,
-        dataset_name="dl_localgov_kpi_database",
+        dataset_name=dlt.config["destination.bigquery.dataset_name"],
     )
     load_info = pipeline.run(get_common_master_source())
     logger.info(load_info)
