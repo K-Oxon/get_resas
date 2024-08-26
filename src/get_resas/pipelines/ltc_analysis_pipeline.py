@@ -2,6 +2,7 @@ import sys
 from typing import Callable, Iterator
 
 import dlt
+from dlt.common.pipeline import LoadInfo
 
 from get_resas.api_client import RESASAPIClient
 from get_resas.config.ltc_analysis import (
@@ -29,9 +30,6 @@ def default_slicer(lst: list) -> list:
         "middle_category_code",
         "year",
         "prefecture_cd",
-        "municipality_cd",
-        "insurance_cd",
-        "code",
     ],
     write_disposition="merge",
 )
@@ -68,9 +66,6 @@ def get_ltc_analysis_job_city(
         "middle_category_code",
         "year",
         "prefecture_cd",
-        "municipality_cd",
-        "insurance_cd",
-        "code",
     ],
     write_disposition="merge",
 )
@@ -92,32 +87,47 @@ def get_ltc_analysis_job_insurer(
     )
     logger.info(f"req_model_list: {len(req_model_list)}")
     response = api_client.fetch_iter(
-        request_models=slicer(req_model_list),  # 6000:7000
+        request_models=slicer(req_model_list),
         with_params=False,  # responseに含まれるので不要
         response_model=LtcAnalysisResponse,
     )
     yield response
 
 
-def load_ltc_analysis_pipeline(jobs: list[Callable[[int], Iterator[any]]]):
+def load_ltc_analysis_pipeline(jobs: list[Callable[[int], Iterator[any]]]) -> LoadInfo:
+    """パイプラインを実行する
+
+    Args:
+        jobs (list[Callable[[int], Iterator[any]]]): パイプラインのジョブ
+
+    Returns:
+        LoadInfo: ロード情報
+    """
+    # load to destination
     pipeline = dlt.pipeline(
         pipeline_name="ltc_analysis",
         destination="bigquery",
+        staging="filesystem",
         dataset_name=dlt.config["destination.bigquery.dataset_name"],
         export_schema_path="src/get_resas/dlt_schemas/export",
     )
     load_info = pipeline.run(
-        jobs
-        # [
-        #     # get_ltc_analysis_job_city(matter_2=201),
-        #     # get_ltc_analysis_job_city(matter_2=202),
-        #     get_ltc_analysis_job_insurer(matter_2=102),
-        #     # get_ltc_analysis_job_insurer(matter_2=301),
-        #     # get_ltc_analysis_job_insurer(matter_2=302),
-        # ]
+        jobs,
+        loader_file_format="parquet",
     )
     logger.info(load_info)
     logger.info(f"loaded row counts: {pipeline.last_trace.last_normalize_info}")
+
+    # localにもロード -> 二度APIを叩いてしまうので一旦ステイ
+    # logger.debug("localにもロード")
+    # pipeline_local = dlt.pipeline(
+    #     pipeline_name="ltc_analysis_local",
+    #     destination=filesystem(bucket_url="~/resas_api_data"),
+    #     dataset_name="resas_api_data",
+    # )
+    # pipeline_local.run(jobs, loader_file_format="parquet")
+    # logger.debug("localにもロード完了")
+
     return load_info
 
 
@@ -126,18 +136,23 @@ if __name__ == "__main__":
     def batch_slicer(start: int, end: int) -> Callable[[list], list]:
         return lambda lst: lst[start:end]
 
-    start = 0  # 前回の途中から
+    start = 5000  # 前回の途中から
     batch_size = 1000  # 1000件ずつloadする
     max_requests = 10000 + start  # 24時間のrate limit
 
+    # TODO: 作りが微妙なので見直したい
     for list_start in range(start, max_requests, batch_size):
         list_end = min(list_start + batch_size, max_requests)
         jobs = [
             get_ltc_analysis_job_insurer(
                 matter_2=102, slicer=batch_slicer(list_start, list_end)
             ),
-            # get_ltc_analysis_job_insurer(matter_2=301, slicer=batch_slicer(start, end)),
-            # get_ltc_analysis_job_insurer(matter_2=302, slicer=batch_slicer(start, end)),
+            # get_ltc_analysis_job_insurer(
+            #     matter_2=301, slicer=batch_slicer(list_start, list_end)
+            # ),
+            # get_ltc_analysis_job_insurer(
+            #     matter_2=302, slicer=batch_slicer(list_start, list_end)
+            # ),
         ]
         try:
             load_ltc_analysis_pipeline(jobs=jobs)

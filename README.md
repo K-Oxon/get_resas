@@ -1,8 +1,13 @@
 # get_resas
 
 ```bash
+rye sync
 dotenvx run -- rye run get_resas
 ```
+
+## 定義済一覧
+
+WIP
 
 ## 設定など
 
@@ -25,3 +30,11 @@ cp .env_sample .env
 3. `src/get_resas/pipelines/`配下に`.py`ファイルを追加しAPIからデータを取得するジョブを定義する
 4. `dotenvx run -- rye run python src/get_resas/pipeline/[YOUR_NEW_PIPELINE].py`などで実行を確認
 5. 必要に応じてmain.pyに追記する
+
+## TODO
+
+- [ ] API Client と transformerを使ったリファクタ
+  - https://dlthub.com/docs/general-usage/resource#process-resources-with-dlttransformer
+  - https://dlthub.com/docs/general-usage/http/rest-client
+- [ ] BigQuery Adapterでdescription追加
+  - https://dlthub.com/docs/api_reference/destinations/impl/bigquery/bigquery_adapter

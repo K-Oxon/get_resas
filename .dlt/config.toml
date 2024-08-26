@@ -2,6 +2,13 @@
 location = "asia-northeast1"
 dataset_name = "resas_api_data"
 
+
+[destination.filesystem]
+bucket_url = "gs://test-kenokumura/dlt"
+
+[normalize]
+loader_file_format = "parquet"
+
 [runtime]
 log_level = "INFO" # the system log level of dlt
 # use the dlthub_telemetry setting to enable/disable anonymous usage data reporting, see https://dlthub.com/docs/telemetry
