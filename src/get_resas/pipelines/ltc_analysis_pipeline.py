@@ -21,6 +21,43 @@ def default_slicer(lst: list) -> list:
 
 
 @dlt.resource(
+    name="resas_ltc_analysis_pref",
+    table_name="resas_ltc_analysis_pref",
+    primary_key=[
+        "disp_type",
+        "matter2",
+        "broad_category_code",
+        "middle_category_code",
+        "year",
+    ],
+    write_disposition="merge",
+)
+def get_ltc_analysis_job_pref(
+    matter_2: int, slicer: Callable[[list], list] = default_slicer
+) -> Iterator[any]:
+    """都道府県単位のデータ取得
+
+    Args:
+        matter_2 (int): 表示内容(中分類)
+        slicer (Callable[[list], list], optional): リストを分割する関数. Defaults to default_slicer.
+
+    Returns:
+        Iterator[any]: LtcAnalysisResponse.result
+    """
+    api_client = RESASAPIClient(api_key=API_KEY)
+    req_model_list = LtcAnalysisRequest.generate_req_model_list_by_pref(
+        matter_2=matter_2
+    )
+    logger.info(f"req_model_list: {len(req_model_list)}")
+    response = api_client.fetch_iter(
+        request_models=slicer(req_model_list),
+        with_params=False,  # responseに含まれるので不要
+        response_model=LtcAnalysisResponse,
+    )
+    yield response
+
+
+@dlt.resource(
     name="resas_ltc_analysis_city",
     table_name="resas_ltc_analysis_city",
     primary_key=[
@@ -136,7 +173,7 @@ if __name__ == "__main__":
     def batch_slicer(start: int, end: int) -> Callable[[list], list]:
         return lambda lst: lst[start:end]
 
-    start = 5000  # 前回の途中から
+    start = 0  # 前回の途中から
     batch_size = 1000  # 1000件ずつloadする
     max_requests = 10000 + start  # 24時間のrate limit
 
@@ -144,9 +181,21 @@ if __name__ == "__main__":
     for list_start in range(start, max_requests, batch_size):
         list_end = min(list_start + batch_size, max_requests)
         jobs = [
-            get_ltc_analysis_job_insurer(
-                matter_2=102, slicer=batch_slicer(list_start, list_end)
+            get_ltc_analysis_job_pref(
+                matter_2=301, slicer=batch_slicer(list_start, list_end)
             ),
+            get_ltc_analysis_job_pref(
+                matter_2=302, slicer=batch_slicer(list_start, list_end)
+            ),
+            # get_ltc_analysis_job_city(
+            #     matter_2=201, slicer=batch_slicer(list_start, list_end)
+            # ),
+            # get_ltc_analysis_job_city(
+            #     matter_2=202, slicer=batch_slicer(list_start, list_end)
+            # ),
+            # get_ltc_analysis_job_insurer(
+            #     matter_2=102, slicer=batch_slicer(list_start, list_end)
+            # ),
             # get_ltc_analysis_job_insurer(
             #     matter_2=301, slicer=batch_slicer(list_start, list_end)
             # ),

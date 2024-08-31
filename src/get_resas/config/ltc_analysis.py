@@ -54,24 +54,85 @@ class LtcAnalysisRequest(BaseRequestModel):
                 # 要介護区分 大分類コードは0から8, 中分類コードは"-"
                 broad_category_cd_list = [str(i) for i in range(0, 9)]
                 middle_category_cd_list = ["-"] * len(broad_category_cd_list)
-                category_cd_list = list(
-                    zip(broad_category_cd_list, middle_category_cd_list)
-                )
+                return list(zip(broad_category_cd_list, middle_category_cd_list))
             case 201 | 202:
-                category_cd_list = get_ltc_service_category()
-            case 301:
-                category_cd_list = [("-", "-")]
-            case 302:
+                return get_ltc_service_category()
+            case 203 | 204 | 301:
+                return [("-", "-")]
+            case 101 | 302:
                 # 介護サービス種（すべての中分類） 0-3, 000-300の組み合わせ
-                category_cd_list = [(f"{i:01d}", f"{i*100:03d}") for i in range(0, 4)]
+                return [(f"{i:01d}", f"{i*100:03d}") for i in range(0, 4)]
             case _:
                 raise ValueError("matter_2が不正です")
-        return category_cd_list
+
+    @classmethod
+    def generate_req_model_list_by_pref(cls, matter_2: int):
+        """都道府県単位のリクエストを作成
+        都道府県コードが何かを入ってさえいれば全都道府県出力される
+        """
+        match matter_2:
+            case 101:
+                # 2014年から2021年まで毎年
+                year_tuple = tuple(range(2014, 2022))
+                disp_type_tuple = (1, 2)
+            case 102:
+                # 要介護区分
+                category_cd_list = cls._generate_categories_code(matter_2)
+                # 2006-2020年（毎年）
+                year_tuple = tuple(range(2006, 2021))
+                disp_type_tuple = (1, 2)
+            case 201:
+                year_tuple = (2021,)
+                disp_type_tuple = (1, 2)
+            case 202:
+                year_tuple = tuple(range(2015, 2022))
+                disp_type_tuple = (1, 2)
+            case 203:
+                year_tuple = tuple(range(2017, 2021))
+                disp_type_tuple = (1, 2)
+            case 204:
+                year_tuple = tuple(range(2007, 2021))
+                disp_type_tuple = (1, 2)
+            case 301:
+                year_tuple = tuple(range(2012, 2022))
+                disp_type_tuple = (1,)
+            case 302:
+                year_tuple = tuple(range(2010, 2021))
+                disp_type_tuple = (1, 2)
+            case _:
+                raise ValueError("matter_2が不正です")
+        category_cd_list = cls._generate_categories_code(matter_2)
+        req_model_list = []
+
+        # 年 × 分類 × 表示タイプ でループ
+        for year in year_tuple:
+            for category_cd in category_cd_list:
+                for disp_type in disp_type_tuple:
+                    req_model_list.append(
+                        cls(
+                            params=LtcAnalysisParams(
+                                year=year,
+                                disp_type=disp_type,
+                                matter_2=matter_2,
+                                broad_category_cd=category_cd[0],
+                                middle_category_cd=category_cd[1],
+                                prefCode="1",  # 適当な値
+                                cityCode="-",
+                                insuranceCode="-",
+                            )
+                        )
+                    )
+        return req_model_list
 
     @classmethod
     def generate_req_model_list(cls, matter_2: int):
         """市町村単位のリクエストを作成
-        市町村コードは適当な値が入っていれば指定の都道府県コードの全ての市町村のデータが返ってくる
+        市市町村単位の場合はprefCodeに入れた都道府県ごとに取得する必要がある
+        （市町村コードは何を入れても都道府県が優先され、都道府県配下の市町村全て出力される）
+
+        都道府県・二次医療圏の場合は何かを入れてさえいれば全部出力される
+
+        イミフ仕様
         """
         match matter_2:
             case 201:
