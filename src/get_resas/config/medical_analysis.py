@@ -1,4 +1,7 @@
 from get_resas.utils.base_models import BaseRequestModel, BaseResponseModel
+from get_resas.utils.get_medical_injury_classification import (
+    get_medical_injury_classification,
+)
 from get_resas.utils.get_pref_code import get_pref_code
 from pydantic import BaseModel, Field
 
@@ -36,59 +39,63 @@ class MedicalAnalysisRequest(BaseRequestModel):
     params: MedicalAnalysisParams
 
     @classmethod
-    def generate_req_model_list(cls, matter2: int):
-        """市町村単位のリクエストを生成（市町村単位）
-        市町村単位の場合はprefCodeに入れた都道府県ごとに取得する必要がある
-        （市町村コードは何を入れても都道府県が優先され、都道府県配下の市町村全て出力される）
-
-        都道府県・二次医療圏の場合は何かを入れてさえいれば全部出力される
-
-        イミフ仕様
-        """
+    def _generate_categories_code(cls, matter2: int) -> list[tuple[str, str]]:
+        """matter2に対応する大分類と中分類を生成"""
         match matter2:
-            # matter2が201-204の場合 -> 2002-2020年（3年毎）
-            case 201 | 202 | 204:
-                year_tuple = (2002, 2005, 2008, 2011, 2014, 2017, 2020)
-                broad_category_code = "00"  # 全て
-            case 203:
-                year_tuple = (2002, 2005, 2008, 2011, 2014, 2017, 2020)
-                broad_category_code = "-"
-            # 205の場合 -> 2008-2020年（2年毎）
+            case 102 | 103:
+                # 傷病分類
+                return get_medical_injury_classification()
+            case 201 | 202:
+                # 診療科分類（医療機関） "00"から"43"まで
+                # 実は市町村単位では00（すべての診療科）しか存在しない
+                broad_category_cd_list = [str(f"{i:02d}") for i in range(0, 44)]
+                middle_category_cd_list = ["-"] * len(broad_category_cd_list)
+                return list(zip(broad_category_cd_list, middle_category_cd_list))
+            case 204:
+                # 病床種類 "00"から"05"まで
+                broad_category_cd_list = [str(f"{i:02d}") for i in range(0, 6)]
+                middle_category_cd_list = ["-"] * len(broad_category_cd_list)
+                return list(zip(broad_category_cd_list, middle_category_cd_list))
             case 205:
-                year_tuple = (
-                    2008,
-                    2010,
-                    2012,
-                    2014,
-                    2016,
-                    2018,
-                    2020,
-                )
-                broad_category_code = "00"
-            # 206,208の場合 -> 2000-2020年（2年毎）
-            case 206 | 208:
-                year_tuple = (
-                    2000,
-                    2002,
-                    2004,
-                    2006,
-                    2008,
-                    2010,
-                    2012,
-                    2014,
-                    2016,
-                    2018,
-                    2020,
-                )
-                broad_category_code = "-"
+                # 主たる診療科分類（医師） "00"から"43"まで
+                broad_category_cd_list = [str(f"{i:02d}") for i in range(0, 44)]
+                middle_category_cd_list = ["-"] * len(broad_category_cd_list)
+                return list(zip(broad_category_cd_list, middle_category_cd_list))
+            case 207:
+                # 病院・診療所別 "00"から "02"まで
+                broad_category_cd_list = [str(f"{i:02d}") for i in range(0, 3)]
+                middle_category_cd_list = ["-"] * len(broad_category_cd_list)
+                return list(zip(broad_category_cd_list, middle_category_cd_list))
+            case 203 | 206 | 208:
+                return [("-", "-")]
             case _:
                 raise ValueError("matter2が不正です")
-        pref_code_list = get_pref_code()
+
+    @classmethod
+    def generate_req_model_list_prefecture(cls, matter2: int):
+        """都道府県単位のリクエストを生成
+        有効な都道府県コードを入れると47個の全ての都道府県のデータが取れる
+        """
+        match matter2:
+            case 102 | 103 | 203 | 204:
+                # 3年毎(2002-2020年)
+                year_tuple = tuple(range(2002, 2021, 3))
+            case 201 | 202:
+                # 3年毎(2008-2020年)
+                year_tuple = tuple(range(2008, 2021, 3))
+            case 205:
+                year_tuple = tuple(range(2008, 2021, 2))
+            case 206 | 207 | 208:
+                year_tuple = tuple(range(2000, 2021, 2))
+            case _:
+                raise ValueError("matter2が不正です")
         disp_type_tuple = (1, 2)
+        category_cd_list = cls._generate_categories_code(matter2)
+
         req_model_list = []
-        # 年 × 47都道府県 × 表示タイプごとにリクエストモデルを生成
+        # 年 × 分類 × 表示タイプごとにリクエストモデルを生成
         for year in year_tuple:
-            for pref_code in pref_code_list:
+            for category_cd in category_cd_list:
                 for disp_type in disp_type_tuple:
                     req_model_list.append(
                         cls(
@@ -97,14 +104,66 @@ class MedicalAnalysisRequest(BaseRequestModel):
                                 dispType=disp_type,
                                 sort=2,  # なぜか必要
                                 matter2=matter2,
-                                broadCategoryCode=broad_category_code,
-                                middleCategoryCode="-",
-                                prefCode=str(pref_code),
-                                cityCode="01100",  # 適当な値でOK
+                                broadCategoryCode=category_cd[0],
+                                middleCategoryCode=category_cd[1],
+                                prefCode="1",  # 有効な適当な値
+                                cityCode="-",
                                 secondaryMedicalCode="-",
                             )
                         )
                     )
+        return req_model_list
+
+    @classmethod
+    def generate_req_model_list_city(cls, matter2: int):
+        """市町村単位のリクエストを生成
+        市町村単位の場合はprefCodeに入れた都道府県ごとに取得する必要がある
+        （市町村コードは何を入れても都道府県が優先され、都道府県配下の市町村全て出力される）
+
+        201/202の場合はcategory_cd_listが("00", "-")のみ有効
+
+        イミフ仕様
+        """
+        match matter2:
+            # matter2が201-204の場合 -> 2002-2020年（3年毎）
+            case 201 | 202 | 203 | 204:
+                year_tuple = tuple(range(2002, 2021, 3))
+            # 205の場合 -> 2008-2020年（2年毎）
+            case 205:
+                year_tuple = tuple(range(2008, 2021, 2))
+            # 206,208の場合 -> 2000-2020年（2年毎）
+            case 206 | 208:
+                year_tuple = tuple(range(2000, 2021, 2))
+            case _:
+                raise ValueError("matter2が不正です")
+        # 市町村単位の場合は全ての診療科のみ有効という仕様
+        if matter2 == 201 or matter2 == 202:
+            category_cd_list = [("00", "-")]
+        else:
+            category_cd_list = cls._generate_categories_code(matter2)
+        pref_code_list = get_pref_code()
+        disp_type_tuple = (1, 2)
+        req_model_list = []
+        # 年 × 47都道府県 × 分類 × 表示タイプごとにリクエストモデルを生成
+        for year in year_tuple:
+            for pref_code in pref_code_list:
+                for category_cd in category_cd_list:
+                    for disp_type in disp_type_tuple:
+                        req_model_list.append(
+                            cls(
+                                params=MedicalAnalysisParams(
+                                    year=year,
+                                    dispType=disp_type,
+                                    sort=2,  # なぜか必要
+                                    matter2=matter2,
+                                    broadCategoryCode=category_cd[0],
+                                    middleCategoryCode=category_cd[1],
+                                    prefCode=str(pref_code),
+                                    cityCode="01100",  # 適当な値でOK
+                                    secondaryMedicalCode="-",
+                                )
+                            )
+                        )
         return req_model_list
 
     @classmethod
@@ -114,52 +173,35 @@ class MedicalAnalysisRequest(BaseRequestModel):
 
         """
         match matter2:
-            case 102:
-                year_tuple = (2014, 2017, 2020)
-                broad_category_code = "00"
-                middle_category_code = "000"
-            case 201 | 202:
-                year_tuple = (2014, 2017, 2020)
-                broad_category_code = "00"
-                middle_category_code = "-"
-            case 203:
-                year_tuple = (2014, 2017, 2020)
-                broad_category_code = "-"
-                middle_category_code = "-"
-            case 204:
-                year_tuple = (2014, 2017, 2020)
-                broad_category_code = "00"
-                middle_category_code = "-"
-            case 205:
+            case 102 | 201 | 202 | 203 | 204:
+                year_tuple = (2014, 2017, 2020)  # 3年毎
+            case 205 | 206 | 208:
                 year_tuple = (2014, 2016, 2018, 2020)  # 2年毎
-                broad_category_code = "00"
-                middle_category_code = "-"
-            case 206 | 208:
-                year_tuple = (2014, 2016, 2018, 2020)  # 2年毎
-                broad_category_code = "-"
-                middle_category_code = "-"
             case _:
                 raise ValueError("matter2が不正です")
         disp_type_tuple = (1, 2)
+        category_cd_list = cls._generate_categories_code(matter2)
+
         req_model_list = []
-        # 年 × 表示タイプごとにリクエストモデルを生成
+        # 年 × 分類 × 表示タイプごとにリクエストモデルを生成
         for year in year_tuple:
-            for disp_type in disp_type_tuple:
-                req_model_list.append(
-                    cls(
-                        params=MedicalAnalysisParams(
-                            year=year,
-                            dispType=disp_type,
-                            sort=2,  # なぜか必要
-                            matter2=matter2,
-                            broadCategoryCode=broad_category_code,
-                            middleCategoryCode=middle_category_code,
-                            prefCode="1",  # 有効な適当な値
-                            cityCode="01202",  # 有効な適当な値
-                            secondaryMedicalCode="0101",  # 有効な適当な値
+            for category_cd in category_cd_list:
+                for disp_type in disp_type_tuple:
+                    req_model_list.append(
+                        cls(
+                            params=MedicalAnalysisParams(
+                                year=year,
+                                dispType=disp_type,
+                                sort=2,  # なぜか必要
+                                matter2=matter2,
+                                broadCategoryCode=category_cd[0],
+                                middleCategoryCode=category_cd[1],
+                                prefCode="1",  # 有効な適当な値
+                                cityCode="01202",  # 有効な適当な値
+                                secondaryMedicalCode="0101",  # 有効な適当な値
+                            )
                         )
                     )
-                )
         return req_model_list
 
 
