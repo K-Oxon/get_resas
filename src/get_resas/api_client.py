@@ -14,7 +14,7 @@ class RESASAPIClient:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.headers = {"X-API-KEY": self.api_key}
-        self.client = httpx.Client()
+        self.client = httpx.Client(timeout=30.0)
 
     def fetch_data(
         self,
