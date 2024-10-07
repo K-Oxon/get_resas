@@ -1,0 +1,176 @@
+version: 2
+version_hash: LnonN+PWfqoEfUAjrIC4MgtHN7f7twdpN7zh/ErcTp0=
+engine_version: 10
+name: wages_by_age_industry
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    resource: _dlt_version
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    resource: _dlt_loads
+    description: Created by DLT. Tracks completed loads
+  resas_wages_by_age_industry_pref:
+    columns:
+      pref_code:
+        nullable: false
+        primary_key: true
+        data_type: bigint
+      pref_name:
+        data_type: text
+        nullable: true
+      sic_name:
+        data_type: text
+        nullable: true
+      sic_code:
+        data_type: text
+        nullable: true
+      simc_name:
+        data_type: text
+        nullable: true
+      simc_code:
+        nullable: false
+        primary_key: true
+        data_type: text
+      wages_age:
+        nullable: false
+        primary_key: true
+        data_type: text
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+        row_key: true
+    write_disposition: merge
+    resource: resas_wages_by_age_industry_pref
+    x-normalizer:
+      seen-data: true
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+        row_key: true
+    write_disposition: append
+    file_format: preferred
+    resource: _dlt_pipeline_state
+    x-normalizer:
+      seen-data: true
+  resas_wages_by_age_industry_pref__data:
+    columns:
+      year:
+        data_type: bigint
+        nullable: true
+      value:
+        data_type: double
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        parent_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+        row_key: true
+    parent: resas_wages_by_age_industry_pref
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    parent_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+    row_key:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      propagation:
+        tables:
+          resas_wages_by_age_industry_pref:
+            _dlt_id: _dlt_root_id
+previous_hashes:
+- YkP+gjK+SfSIpSgAsTRSoxcQiG670JgDr04w3FJVAq8=
+- TMb4nNb0tdKxrK7XHs7u6pN10BKG+aRgRJFjRves+z4=
