@@ -22,7 +22,7 @@ def get_wages_by_age_industry_pref_job():
     req_model_list = WagesByAgeIndustryRequest.generate_req_model_list()
     logger.info(f"len(req_model_list): {len(req_model_list)}")
     response = api_client.fetch_iter(
-        request_models=req_model_list[40000:45000],
+        request_models=req_model_list,
         with_params=True,
         exclude_params_keys=["prefCode", "sicCode", "simcCode"],
         response_model=WagesByAgeIndustryResponse,

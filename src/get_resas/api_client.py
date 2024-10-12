@@ -1,3 +1,4 @@
+import random
 from time import sleep
 
 import httpx
@@ -13,8 +14,15 @@ class RESASAPIClient:
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.headers = {"X-API-KEY": self.api_key}
-        self.client = httpx.Client(timeout=30.0)
+        self.headers = {
+            "X-API-KEY": self.api_key,
+            "User-Agent": "xh/0.22.2",
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "close",
+            "Host": "opendata.resas-portal.go.jp",
+        }
+        self.client = httpx.Client(timeout=30.0, http2=True)
 
     def fetch_data(
         self,
@@ -86,7 +94,7 @@ class RESASAPIClient:
             else:
                 results.append(response["result"])
             # 5 リクエスト/秒 に抑える
-            sleep(0.2)
+            sleep(random.uniform(0.2, 0.3))
         return results
 
     def _add_params_to_response(
